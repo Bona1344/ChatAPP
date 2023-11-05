@@ -1,4 +1,5 @@
 import 'package:firebase_auth_2/pages/auth/auth.dart';
+import 'package:firebase_auth_2/pages/auth/login_or_register.dart';
 import 'package:firebase_auth_2/pages/home_page.dart';
 import 'package:firebase_auth_2/pages/profile_page.dart';
 import 'package:firebase_auth_2/pages/theme/dark_mode.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const LoginOrRegister(),
       theme: lightMode,
       darkTheme: darkMode,
       routes: {

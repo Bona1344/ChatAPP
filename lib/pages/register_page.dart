@@ -1,4 +1,5 @@
 import 'package:auth/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth_2/pages/components/my_button.dart';
 import 'package:firebase_auth_2/pages/components/my_dialogbox.dart';
 import 'package:firebase_auth_2/pages/components/my_textfield.dart';
@@ -30,7 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
 
-    //confirm the password match
+    //CONFIRMING PASSWORD
+
+    //if the password don't match, pop the loading circle first and display an errorMessage.
+
     if (_pwController.text != _confirmpwController.text) {
       //pop the loading circle first
       Navigator.pop(context);
@@ -39,15 +43,21 @@ class _RegisterPageState extends State<RegisterPage> {
       displayErrorMessage("Password Don't Match!", context);
     }
 
-    // if the password, create the user
+    // if the password match, create the user
     else {
       try {
         UserCredential? userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: _emailController.text, password: _pwController.text);
 
+        //create a document and add it to the firestore
+        createUserDocuments(userCredential);
+
         //pop the loading circle first
         Navigator.pop(context);
+
+        // then Navigate to home page
+        Navigator.pushNamed(context, '\home_page');
       } on FirebaseException catch (e) {
         //pop the loading circle first
         Navigator.pop(context);
@@ -55,6 +65,19 @@ class _RegisterPageState extends State<RegisterPage> {
         // display the error
         displayErrorMessage(e.code, context);
       }
+    }
+  }
+
+//create user documents and collect them in firestore
+  Future<void> createUserDocuments(UserCredential? userCredential) async {
+    if (userCredential != null && userCredential.user != null) {
+      await FirebaseFirestore.instance
+          .collection("user")
+          .doc(userCredential.user!.email)
+          .set({
+        "username": _usernameController.text,
+        "email": _emailController.text,
+      });
     }
   }
 
